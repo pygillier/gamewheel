@@ -1,5 +1,13 @@
 {% extends 'layout.html' %}
 {% block content %}
+    {% if player.games.count == 0 %}
+    <section class="container">
+    <div class="notification is-warning">
+        <strong>Warning!</strong> Your library is empty. Please make sure your Steam profile is public
+        then click <a href="{% url 'library:import_library' %}">here</a> to import your library.
+</div>
+    </section>
+    {% endif %}
 <section class="hero">
     <div class="hero-body">
         <div class="container">
@@ -22,15 +30,16 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading">Playing games</p>
-                <p class="title">123</p>
+                <p class="title">{{player.get_currently_playing.count}}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading">Finished games</p>
-                <p class="title">456K</p>
+                <p class="title">{{player.get_finished.count}}</p>
             </div>
         </div>
     </nav>
 </section>
+
 {% endblock content %}

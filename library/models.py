@@ -1,4 +1,14 @@
+from enum import Enum
+from datetime import datetime
 from django.db import models
+from steam.webapi import WebAPI
+from allauth.socialaccount.models import SocialApp
+
+
+class PlayChoice(Enum):
+    NONE = 'unknown'
+    PLAYING = 'playing'
+    FINISHED = 'finished'
 
 
 class Game(models.Model):
@@ -27,7 +37,45 @@ class Game(models.Model):
         ordering = ('name',)
 
 
+class PlayerManager(models.Manager):
+
+    def import_library(self, player):
+        steam_app = SocialApp.objects.filter(provider='steam').first()
+        api = WebAPI(key=steam_app.secret)
+
+        games = api.IPlayerService.GetOwnedGames(
+            steamid=player.steamid,
+            include_appinfo=True,
+            include_played_free_games=True,
+            appids_filter=None
+        )['response']
+
+        for game in games['games']:
+            game_obj, created = Game.objects.update_or_create(
+                appid=game['appid'],
+                defaults={
+                    'name': game['name'],
+                    'icon_id': game['img_icon_url'],
+                    'logo_id': game['img_logo_url'],
+                }
+            )
+
+            if created:
+                print('Game %s created in DB' % game['name'])
+            else:
+                print('Game %s updated in DB' % game['name'])
+
+            # User's stat on game
+            stat, created = GameStat.objects.update_or_create(
+                player=player,
+                game=game_obj,
+                defaults={
+                    'playtime': game['playtime_forever']
+                }
+            )
+
 class Player(models.Model):
+    objects = PlayerManager()
     steamid = models.BigIntegerField(primary_key=True)
     nickname = models.CharField(max_length=255)
     real_name = models.CharField(max_length=255)
@@ -49,6 +97,18 @@ class Player(models.Model):
     def __str__(self):
         return f"{self.nickname}"
 
+    def get_currently_playing(self):
+        return GameStat.objects.filter(
+            player=self,
+            status=PlayChoice.PLAYING
+        )
+
+    def get_finished(self):
+        return GameStat.objects.filter(
+            player=self,
+            status=PlayChoice.FINISHED
+        )
+
     class Meta:
         ordering = ('nickname',)
 
@@ -57,6 +117,20 @@ class GameStat(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     playtime = models.IntegerField(default=0)
+    status = models.CharField(
+        max_length=50,
+        choices=[(state, state.value) for state in PlayChoice],
+        default=PlayChoice.NONE
+    )
+
+    started_at = models.DateTimeField(blank=True, null=True)
+    finished_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def play(self):
+        self.status = PlayChoice.PLAYING
+        self.started_at = datetime.now()
+
+        return self.save()
