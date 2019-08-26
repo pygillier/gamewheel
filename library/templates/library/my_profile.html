@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% block content %}
+<section class="hero">
+    <div class="hero-body">
+        <div class="container">
+            <img src="{{ player.avatar_f_url }}" class="is-pulled-right"/>
+            <h1 class="title">{{player.nickname}}</h1>
+            <h2 class="subtitle">
+                SteamID: {{ player.steamid }}
+            </h2>
+        </div>
+    </div>
+</section>
+<section class="container">
+    <nav class="level">
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Owned games</p>
+                <p class="title">{{player.games.count}}</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Playing games</p>
+                <p class="title">123</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Finished games</p>
+                <p class="title">456K</p>
+            </div>
+        </div>
+    </nav>
+</section>
+{% endblock content %}

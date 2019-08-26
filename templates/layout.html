@@ -1,0 +1,20 @@
+{% load render_bundle from webpack_loader %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GameWheel - What will you play next ?</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    {% render_bundle 'main' 'css'%}
+</head>
+<body>
+    <header>
+        {% include '_navbar.html' %}
+    </header>
+    <section class="section">
+        {% block content %}{% endblock content %}
+    </section>
+{% render_bundle 'main'%}
+</body>
+</html>
