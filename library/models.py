@@ -20,6 +20,9 @@ class Game(models.Model):
     def get_logo_url(self):
         return f'http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.logo_id}.jpg'  # noqa
 
+    def __str__(self):
+        return f"{self.name}"
+
     class Meta:
         ordering = ('name',)
 
@@ -42,6 +45,9 @@ class Player(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.nickname}"
 
     class Meta:
         ordering = ('nickname',)

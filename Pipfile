@@ -10,6 +10,7 @@ django = "*"
 steam = "*"
 "psycopg2-binary" = "*"
 django-environ = "*"
+django-admin-autocomplete-filter = "*"
 
 [requires]
 python_version = "3.6"

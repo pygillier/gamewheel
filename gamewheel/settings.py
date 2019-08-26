@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # 3rd party
+    'admin_auto_filters',
+
     # Application
     'library.apps.LibraryConfig',
 ]
