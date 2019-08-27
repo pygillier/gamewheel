@@ -16,17 +16,17 @@
     {%  if user.is_authenticated %}
         <div class="navbar-start">
             <a class="navbar-item" href="{% url 'library:my_library' %}">
-                My library
+                Play a game
             </a>
+
 
         </div>
     {% endif %}
 
     <div class="navbar-end">
     {% if user.is_authenticated %}
-        <a class="navbar-item" href="{% url 'library:my_profile' %}">
-            My profile
-        </a>
+        <a class="navbar-item" href="{% url 'library:my_library' %}">My library</a>
+        <a class="navbar-item" href="{% url 'library:my_profile' %}">My profile</a>
     {% endif %}
         <div class="navbar-item">
             <div class="buttons">

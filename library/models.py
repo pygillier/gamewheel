@@ -134,3 +134,9 @@ class GameStat(models.Model):
         self.started_at = datetime.now()
 
         return self.save()
+
+    def finish(self):
+        self.status = PlayChoice.FINISHED
+        self.finished_at = datetime.now()
+
+        return self.save()

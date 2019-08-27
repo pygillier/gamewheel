@@ -45,3 +45,16 @@ class MarkAsPlayingView(RedirectView):
             game_id=kwargs['appid'])
         game.play()
         return super().get_redirect_url()
+
+class MarkAsFinishedView(RedirectView):
+    permanent = False
+    query_string = False
+    pattern_name = 'library:my_profile'
+
+    def get_redirect_url(self, *args, **kwargs):
+        game = get_object_or_404(
+            GameStat,
+            player=self.request.user.get_player(),
+            game_id=kwargs['appid'])
+        game.finish()
+        return super().get_redirect_url()
