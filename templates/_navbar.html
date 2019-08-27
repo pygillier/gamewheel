@@ -15,7 +15,7 @@
     <div id="navbar-top" class="navbar-menu">
     {%  if user.is_authenticated %}
         <div class="navbar-start">
-            <a class="navbar-item" href="{% url 'library:my_library' %}">
+            <a class="navbar-item" href="{% url 'home:play' %}">
                 Play a game
             </a>
 
@@ -34,6 +34,9 @@
                 <a class="button is-light" href="{% url 'account_logout' %}?next=/">Logout</a>
             {% else %}
                 <a class="button is-primary" href="{% provider_login_url 'steam' %}">
+                    <span class="icon is-large">
+                        <i class="fab fa-steam"></i>
+                    </span>
                     <strong>Sign up with Steam</strong>
                 </a>
             {% endif %}

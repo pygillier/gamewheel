@@ -12,9 +12,10 @@
     <header>
         {% include '_navbar.html' %}
     </header>
-    <section class="section">
-        {% block content %}{% endblock content %}
-    </section>
+    {% if messages %}
+        {% include '_messages.html' %}
+    {% endif %}
+    {% block content %}{% endblock content %}
 {% render_bundle 'main'%}
 </body>
 </html>
