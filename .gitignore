@@ -71,3 +71,7 @@ dmypy.json
 .pyre/
 
 dbdata/
+node_modules/
+assets/bundles/
+webpack-stats.json
+public/

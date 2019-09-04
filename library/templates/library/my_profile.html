@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+{% block content %}
+    {% if player.games.count == 0 %}
+    <section class="container">
+    <div class="notification is-warning">
+        <strong>Warning!</strong> Your library is empty. Please make sure your Steam profile is public
+        then click <a href="{% url 'library:import_library' %}">here</a> to import your library.
+</div>
+    </section>
+    {% endif %}
+<section class="hero">
+    <div class="hero-body">
+        <div class="container">
+            <img src="{{ player.avatar_f_url }}" class="is-pulled-right"/>
+            <h1 class="title">{{player.nickname}}</h1>
+            <h2 class="subtitle">
+                SteamID: {{ player.steamid }}
+            </h2>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <article class="container" id="game-stats">
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Owned games</p>
+                    <p class="title">{{player.games.count}}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Playing games</p>
+                    <p class="title">{{player.get_currently_playing.count}}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Finished games</p>
+                    <p class="title">{{player.get_finished.count}}</p>
+                </div>
+            </div>
+        </nav>
+    </article>
+</section>
+<section class="section">
+    <article class="container">
+        <div class="columns">
+            <div class="column is-half">
+                <h2 class="title is-3">My play-list</h2>
+                {% for play in player.get_currently_playing.all %}
+                    {% include 'library/_gamecard.html' with game=play.game simple=True only %}
+                {% endfor %}
+            </div>
+            <div class="column is-half">
+                <h2 class="title is-3">My friends</h2>
+                <p>To be developed</p>
+            </div>
+        </div>
+    </article>
+
+</section>
+{% endblock content %}

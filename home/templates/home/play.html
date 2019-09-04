@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+    <section class="container">
+        <div class="columns">
+            <div class="column is-two-third">
+                Displayed game
+            </div>
+            <div class="column is-one-third">
+                <h2 class="title is-4">I'm feeling dangerous</h2>
+                <img class="image is-4by3" src="{% static "home/img/danger.jpg" %}"/>
+            </div>
+
+        </div>
+    </section>
+{% endblock content %}

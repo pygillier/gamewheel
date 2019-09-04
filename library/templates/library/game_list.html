@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="section container">
+        <div class="columns is-multiline">
+            {% for game in games %}
+                <div class="column is-half">{% include 'library/_gamecard.html' with game=game %}</div>
+            {% endfor %}
+        </div>
+
+    {% if is_paginated %}
+        {% include '_pagination.html' with page=page_obj paginator=paginator only %}
+    {% endif %}
+    </div>
+{% endblock content %}

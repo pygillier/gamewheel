@@ -11,6 +11,9 @@ steam = "*"
 "psycopg2-binary" = "*"
 django-environ = "*"
 django-admin-autocomplete-filter = "*"
+django-webpack-loader = "*"
+django-allauth = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.6"

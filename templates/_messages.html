@@ -1,0 +1,8 @@
+<section class="section container">
+    {% for message in messages %}
+    <div class="notification is-primary">
+  <button class="delete"></button>
+  {{ message }}
+</div>
+{% endfor %}
+</section>
