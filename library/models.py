@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import Enum
 
 from allauth.socialaccount.models import SocialApp
+from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models import Count
 from django.db.models import Max
@@ -75,10 +76,10 @@ class Game(models.Model):
         return self.player_set.count()
 
     def get_icon_url(self):
-        return f"http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.icon_id}.jpg"  # noqa
+        return f"http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.icon_id}.jpg"
 
     def get_logo_url(self):
-        return f"http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.logo_id}.jpg"  # noqa
+        return f"http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.logo_id}.jpg"
 
     def __str__(self):
         return f"{self.name}"
@@ -115,7 +116,7 @@ class PlayerManager(models.Manager):
                 print("Game %s updated in DB" % game["name"])
 
             # User's stat on game
-            stat, created = GameStat.objects.update_or_create(
+            GameStat.objects.update_or_create(
                 player=player,
                 game=game_obj,
                 defaults={"playtime": game["playtime_forever"]},
@@ -143,7 +144,7 @@ class Player(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nickname}"
+        return self.nickname
 
     def get_currently_playing(self):
         return GameStat.objects.filter(player=self, status=PlayChoice.PLAYING)
@@ -182,3 +183,25 @@ class GameStat(models.Model):
         self.finished_at = datetime.now()
 
         return self.save()
+
+
+class Group(models.Model):
+    group_id = models.BigIntegerField()
+    name = models.CharField(max_length=255)
+    headline = models.CharField(max_length=255, null=True)
+    url = models.URLField()
+
+    avatar_url = models.URLField()
+    avatar_m_url = models.URLField()
+    avatar_f_url = models.URLField()
+
+    members = models.ManyToManyField(Player, related_name="groups")
+
+    # Link to a Django site
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name

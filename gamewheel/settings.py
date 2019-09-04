@@ -167,7 +167,4 @@ WEBPACK_LOADER = {
 
 # Constance config
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
-CONSTANCE_CONFIG = {
-    "INVITATION_TOKEN": ("takemywalletgaben", "Global invitation token"),
-    "STEAM_API_TOKEN": ("iwantavalidtokenbaby", "Steam API token"),
-}
+CONSTANCE_CONFIG = {"STEAM_API_TOKEN": ("iwantavalidtokenbaby", "Steam API token")}
