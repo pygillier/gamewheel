@@ -1,17 +1,67 @@
-from enum import Enum
 from datetime import datetime
-from django.db import models
-from steam.webapi import WebAPI
+from enum import Enum
+
 from allauth.socialaccount.models import SocialApp
+from django.db import models
+from django.db.models import Count
+from django.db.models import Max
+from django.db.models import Min
+from django_random_queryset import strategies
+from steam.webapi import WebAPI
 
 
 class PlayChoice(Enum):
-    NONE = 'unknown'
-    PLAYING = 'playing'
-    FINISHED = 'finished'
+    NONE = "unknown"
+    PLAYING = "playing"
+    FINISHED = "finished"
+
+
+class RandomQuerySet(models.query.QuerySet):
+    def random(self, amount=1):
+        aggregates = self.aggregate(
+            min_id=Min("appid"), max_id=Max("appid"), count=Count("appid")
+        )
+
+        if not aggregates["count"]:
+            return self.none()
+
+        if aggregates["count"] <= amount:
+            return self.all()
+
+        if (aggregates["max_id"] - aggregates["min_id"]) + 1 == aggregates["count"]:
+            return self.filter(
+                appid__in=strategies.min_max(
+                    amount,
+                    aggregates["min_id"],
+                    aggregates["max_id"],
+                    aggregates["count"],
+                )
+            )
+
+        try:
+            selected_ids = strategies.min_max_count(
+                amount, aggregates["min_id"], aggregates["max_id"], aggregates["count"]
+            )
+        except strategies.SmallPopulationSize:
+            selected_ids = self.values_list("appid", flat=True)
+
+        assert len(selected_ids) > amount
+        return self.filter(appid__in=selected_ids).order_by("?")[:amount]
+
+
+class GameManager(models.Manager):
+    def random(self, *args, **kwargs):
+        return self.__get_queryset().random(*args, **kwargs)
+
+    def get_queryset(self):
+        return RandomQuerySet(self.model)
 
 
 class Game(models.Model):
+
+    # Custom manager to have a clean random selector
+    objects = GameManager()
+
     appid = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
 
@@ -25,54 +75,52 @@ class Game(models.Model):
         return self.player_set.count()
 
     def get_icon_url(self):
-        return f'http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.icon_id}.jpg'  # noqa
+        return f"http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.icon_id}.jpg"  # noqa
 
     def get_logo_url(self):
-        return f'http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.logo_id}.jpg'  # noqa
+        return f"http://media.steampowered.com/steamcommunity/public/images/apps/{self.appid}/{self.logo_id}.jpg"  # noqa
 
     def __str__(self):
         return f"{self.name}"
 
     class Meta:
-        ordering = ('name',)
+        ordering = ("name",)
 
 
 class PlayerManager(models.Manager):
-
     def import_library(self, player):
-        steam_app = SocialApp.objects.filter(provider='steam').first()
+        steam_app = SocialApp.objects.filter(provider="steam").first()
         api = WebAPI(key=steam_app.secret)
 
         games = api.IPlayerService.GetOwnedGames(
             steamid=player.steamid,
             include_appinfo=True,
             include_played_free_games=True,
-            appids_filter=None
-        )['response']
+            appids_filter=None,
+        )["response"]
 
-        for game in games['games']:
+        for game in games["games"]:
             game_obj, created = Game.objects.update_or_create(
-                appid=game['appid'],
+                appid=game["appid"],
                 defaults={
-                    'name': game['name'],
-                    'icon_id': game['img_icon_url'],
-                    'logo_id': game['img_logo_url'],
-                }
+                    "name": game["name"],
+                    "icon_id": game["img_icon_url"],
+                    "logo_id": game["img_logo_url"],
+                },
             )
 
             if created:
-                print('Game %s created in DB' % game['name'])
+                print("Game %s created in DB" % game["name"])
             else:
-                print('Game %s updated in DB' % game['name'])
+                print("Game %s updated in DB" % game["name"])
 
             # User's stat on game
             stat, created = GameStat.objects.update_or_create(
                 player=player,
                 game=game_obj,
-                defaults={
-                    'playtime': game['playtime_forever']
-                }
+                defaults={"playtime": game["playtime_forever"]},
             )
+
 
 class Player(models.Model):
     objects = PlayerManager()
@@ -85,7 +133,7 @@ class Player(models.Model):
     avatar_m_url = models.URLField()
     avatar_f_url = models.URLField()
 
-    games = models.ManyToManyField(Game, through='GameStat')
+    games = models.ManyToManyField(Game, through="GameStat")
 
     country_code = models.CharField(max_length=4)
 
@@ -98,19 +146,13 @@ class Player(models.Model):
         return f"{self.nickname}"
 
     def get_currently_playing(self):
-        return GameStat.objects.filter(
-            player=self,
-            status=PlayChoice.PLAYING
-        )
+        return GameStat.objects.filter(player=self, status=PlayChoice.PLAYING)
 
     def get_finished(self):
-        return GameStat.objects.filter(
-            player=self,
-            status=PlayChoice.FINISHED
-        )
+        return GameStat.objects.filter(player=self, status=PlayChoice.FINISHED)
 
     class Meta:
-        ordering = ('nickname',)
+        ordering = ("nickname",)
 
 
 class GameStat(models.Model):
@@ -120,7 +162,7 @@ class GameStat(models.Model):
     status = models.CharField(
         max_length=50,
         choices=[(state, state.value) for state in PlayChoice],
-        default=PlayChoice.NONE
+        default=PlayChoice.NONE,
     )
 
     started_at = models.DateTimeField(blank=True, null=True)
