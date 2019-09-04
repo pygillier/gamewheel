@@ -7,18 +7,14 @@
             <h1 class="title has-text-centered">
                 Ready to spin the wheel?
             </h1>
-            <article class="subtitle">
+            <article class="subtitle has-text-centered">
                 <p>
-                    Fullheight subtitle
-                Fullheight subtitleFullheight subtitle
-                Fullheight subtitle
-                Fullheight subtitleFullheight subtitleFullheight subtitleFullheight subtitle
-                Fullheight subtitle
-                Fullheight subtitle
-                Fullheight subtitle
+                    Too many games in your Steam library ?
                 </p>
+                <p>Playing the same old game again & again ?</p>
+                <p>Let chance, or your friends, decide what you will play next!</p>
                 {% if not user.is_authenticated %}
-                <p class="has-text-centered">
+                <p>
                     <a class="button is-large is-primary" href="{% provider_login_url 'steam' %}">
                         <span class="icon is-large">
                             <i class="fab fa-steam"></i>

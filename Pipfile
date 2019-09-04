@@ -14,6 +14,8 @@ django-admin-autocomplete-filter = "*"
 django-webpack-loader = "*"
 django-allauth = "*"
 django-debug-toolbar = "*"
+django-random-queryset = "*"
+django-constance = {extras = ["database"],version = "*"}
 
 [requires]
 python_version = "3.6"
