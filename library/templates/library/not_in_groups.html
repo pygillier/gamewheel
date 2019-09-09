@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% load i18n %}
+{% block head_title %}{% trans "Access denied" %}{% endblock %}
+{% block content %}
+    <section class="container section">
+        <article>
+            <h1 class="title is-2">{% trans "Access denied" %}</h1>
+            <p>Please make sure you belongs to the following groups on Steam:</p>
+            <ul>
+            {% for group in groups %}
+                <li><a href="{{ group.url }}">{{ group.name }}</a></li>
+            {% endfor %}
+            </ul>
+        </article>
+    </section>
+{% endblock content %}

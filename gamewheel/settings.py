@@ -128,6 +128,8 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+SOCIALACCOUNT_ADAPTER = "library.socialadapter.SteamWithGroupCheckAdapter"
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 

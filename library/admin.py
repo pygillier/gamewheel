@@ -69,4 +69,4 @@ class GameStatAdmin(admin.ModelAdmin):
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("group_id", "name")

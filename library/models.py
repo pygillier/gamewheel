@@ -198,7 +198,7 @@ class Group(models.Model):
     members = models.ManyToManyField(Player, related_name="groups")
 
     # Link to a Django site
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name="groups")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
