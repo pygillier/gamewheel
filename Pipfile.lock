@@ -157,10 +157,10 @@
         },
         "django-random-queryset": {
             "hashes": [
-                "sha256:2c9bad776ae60618162299758622d852c06ac30d9a485d321094e9eaec307510"
+                "sha256:39317f60bf6ee5afe132241e26586014a0383361e1d01074cb7af0bef555b123"
             ],
             "index": "pypi",
-            "version": "==0.1.1"
+            "version": "==0.1.2"
         },
         "django-webpack-loader": {
             "hashes": [
